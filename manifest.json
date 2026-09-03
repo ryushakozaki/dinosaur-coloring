@@ -1,0 +1,9 @@
+{
+  "name":"きょうりゅう自由ぬりえ",
+  "short_name":"恐竜ぬりえ",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#fff9e8",
+  "theme_color":"#69b83f",
+  "lang":"ja"
+}

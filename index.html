@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#7ac943">
+<meta name="description" content="4歳から遊べる、恐竜10種類の自由ぬりえゲーム。好きな色で好きなパーツをタップして塗れます。">
+<link rel="manifest" href="manifest.json">
+<title>きょうりゅう自由ぬりえ</title>
+<style>
+:root{--green:#69b83f;--dark:#31552b;--cream:#fff9e8;--line:#3d3a32}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:linear-gradient(#e9f8ff,#fff9e8 45%,#eaf7dd);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#39452f}
+body{touch-action:manipulation}
+button{font:inherit;cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:10px 12px 28px}
+header{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,#c8f0ff,#fff);padding:16px 18px 14px;box-shadow:0 4px 0 #b6d9a2}
+header:before,header:after{content:"";position:absolute;border-radius:50%;background:#fff;opacity:.8}
+header:before{width:150px;height:70px;right:-30px;top:-30px}
+header:after{width:100px;height:50px;left:28%;top:-20px}
+.title{position:relative;text-align:center;font-weight:1000;color:#f28b1c;font-size:clamp(30px,6vw,56px);text-shadow:0 3px 0 #fff;letter-spacing:.03em}
+.subtitle{position:relative;text-align:center;font-weight:800;font-size:clamp(14px,2.5vw,20px);color:#477b3a}
+.section{margin-top:12px;background:#ffffffdc;border:2px solid #d4e5c8;border-radius:22px;padding:12px;box-shadow:0 3px 10px #557a3a18}
+.section-title{font-weight:1000;color:#559c38;font-size:20px;margin:2px 4px 10px}
+.dinos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.dino{border:2px solid #d9e4d1;background:#fff;border-radius:16px;padding:7px 4px 6px;min-width:0;box-shadow:0 2px 0 #d6dfcc}
+.dino.selected{border-color:#69b83f;box-shadow:0 0 0 3px #bfeaa9,0 2px 0 #91bd78}
+.dino .thumb{height:58px;display:flex;align-items:center;justify-content:center;font-size:40px;filter:saturate(.8)}
+.dino b{display:block;text-align:center;font-size:clamp(10px,2vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px}
+.canvas-wrap{position:relative;background:#fff;border:3px solid #d6c49b;border-radius:20px;padding:8px;overflow:hidden}
+svg{display:block;width:100%;height:auto;background:#fff}
+.region{fill:#fff;stroke:var(--line);stroke-width:4;stroke-linejoin:round;stroke-linecap:round;cursor:pointer;transition:filter .1s}
+.region:active{filter:brightness(.9)}
+.detail{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.eye{fill:#222;stroke:none}
+.panel{display:flex;flex-direction:column;gap:10px}
+.panel-card{background:#fff;border:2px solid #d4e5c8;border-radius:20px;padding:12px}
+.panel-title{font-weight:1000;color:#559c38;margin-bottom:8px}
+.colors{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.color{width:100%;aspect-ratio:1;border:3px solid #fff;border-radius:12px;box-shadow:0 2px 0 #b5b5b5}
+.color.selected{outline:4px solid #365d2d;transform:scale(1.04)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.action{border:0;border-radius:15px;padding:11px 7px;background:#f1f7ec;color:#365b2d;font-weight:900;box-shadow:0 2px 0 #c7d8bd}
+.action.danger{background:#fff0f0;color:#a64b4b}
+.action.preview{background:#fff0c6;color:#7b5a20}
+.message{min-height:44px;text-align:center;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;color:#4b6f40}
+.progress{height:12px;background:#e5eedf;border-radius:99px;overflow:hidden}
+.progress>i{display:block;height:100%;width:0;background:#70c74c;border-radius:99px;transition:width .2s}
+.done{font-size:22px;text-align:center;color:#4f9c36;font-weight:1000}
+.legend{text-align:center;color:#74816c;font-size:13px;font-weight:700}
+footer{text-align:center;color:#74816c;font-size:12px;margin-top:12px}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.modal.show{display:flex}
+.modal-card{background:#fffdf2;border-radius:26px;padding:24px;max-width:420px;width:100%;text-align:center;box-shadow:0 12px 40px #0005}
+.modal-card h2{color:#f28b1c;margin:0 0 10px;font-size:30px}
+.preview-svg{width:100%;border:2px solid #ddd;border-radius:16px}
+.modal-card button{border:0;background:#69b83f;color:#fff;font-weight:1000;border-radius:16px;padding:12px 22px;margin-top:12px}
+@media(max-width:800px){.main{grid-template-columns:1fr}.panel{display:grid;grid-template-columns:1fr 1fr}.panel-card.colors-card{grid-column:1/-1}.dinos{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:520px){.app{padding:7px 7px 20px}.section{padding:8px;border-radius:18px}.dino{padding:4px 2px}.dino .thumb{height:46px;font-size:31px}.dinos{gap:5px}.main{gap:8px}.panel{display:flex}.panel-card{border-radius:17px;padding:9px}.colors{gap:5px}.color{border-radius:9px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="title">🦖 きょうりゅう自由ぬりえ</div>
+  <div class="subtitle">すきないろをえらんで、すきなところをタップしてぬろう！</div>
+</header>
+
+<section class="section">
+  <div class="section-title">🦕 きょうりゅうをえらぼう</div>
+  <div class="dinos" id="dinos"></div>
+</section>
+
+<section class="section main">
+  <div class="canvas-wrap" id="canvasWrap"></div>
+  <aside class="panel">
+    <div class="panel-card colors-card">
+      <div class="panel-title">🎨 いろをえらぼう</div>
+      <div class="colors" id="colors"></div>
+    </div>
+    <div class="panel-card">
+      <div class="panel-title">🧸 あそびかた</div>
+      <div class="message" id="message">いろをえらんで、恐竜のパーツをタップしてね！</div>
+      <div class="progress"><i id="progress"></i></div>
+      <div class="legend" id="percent">0% ぬれたよ</div>
+    </div>
+    <div class="panel-card">
+      <div class="actions">
+        <button class="action" id="undo">↩️ もどす</button>
+        <button class="action" id="reset">🔄 さいしょから</button>
+        <button class="action danger" id="clear">⬜ しろにもどす</button>
+        <button class="action preview" id="preview">👀 できあがり</button>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<footer>4歳くらいから楽しめる、タップだけのかんたん恐竜ぬりえ。まちがえてもだいじょうぶ！</footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <h2>🎉 できあがり！</h2>
+    <div id="modalText">すごい！</div>
+    <div id="previewHolder"></div>
+    <button onclick="closeModal()">もっとぬる！</button>
+  </div>
+</div>
+
+<script>
+const PALETTE=[
+ '#ff3b30','#ff6b35','#ff9f0a','#ffd60a','#8cc63f','#34c759','#00a86b',
+ '#00b8d9','#0a84ff','#5856d6','#af52de','#ff2d92','#ff8fb1','#8b5e3c',
+ '#c98b52','#f4c2a1','#ffd7b5','#fff1a8','#d7e6c8','#9b9b9b','#5b6470',
+ '#3a3a3a','#ffffff'
+];
+
+const dinosaurs=[
+ {id:'trex',name:'ティラノサウルス',emoji:'🦖', regions: [
+  ['body','M145 235 Q250 155 390 190 Q520 205 670 245 L650 285 Q535 285 430 265 Q320 305 210 300 Z'],
+  ['head','M150 235 Q105 215 70 165 Q55 115 95 80 Q150 45 215 78 L245 120 L215 190 Z'],
+  ['jaw','M90 160 Q145 175 215 145 Q235 160 218 195 Q170 225 105 200 Z'],
+  ['tail','M390 205 Q520 180 735 195 L690 225 Q550 235 425 250 Z'],
+  ['rearleg','M365 260 Q410 275 420 335 L400 445 L350 445 L335 365 Z'],
+  ['frontleg','M245 255 Q275 275 265 335 L240 385 L205 375 L225 315 Z'],
+  ['foot1','M350 438 L320 475 L350 478 L375 448 L395 475 L420 470 L400 440 Z'],
+  ['neck','M205 165 Q240 135 285 170 L315 230 L270 260 L225 220 Z'],
+  ['belly','M230 255 Q300 270 360 250 L390 290 Q315 320 230 295 Z'],
+  ['crest','M120 88 L150 48 L168 92 L190 45 L205 105 Z']
+ ]},
+ {id:'triceratops',name:'トリケラトプス',emoji:'🦏', regions:[
+  ['body','M230 210 Q320 160 455 190 Q540 205 625 245 L605 285 Q510 300 425 270 Q330 310 235 285 Z'],
+  ['head','M225 220 Q155 220 105 190 Q65 165 80 120 Q105 75 175 90 Q220 98 250 145 L275 195 Z'],
+  ['frill','M125 115 Q125 45 195 55 Q250 60 275 120 L250 165 L205 140 L165 165 Z'],
+  ['horn1','M130 108 L85 38 L145 95 Z'],
+  ['horn2','M175 100 L170 28 L205 105 Z'],
+  ['beak','M82 145 L38 160 L90 180 L125 168 Z'],
+  ['leg1','M300 270 L335 280 L325 435 L285 435 Z'],
+  ['leg2','M455 270 L490 275 L500 435 L460 435 Z'],
+  ['leg3','M540 270 L570 270 L595 415 L560 430 Z'],
+  ['tail','M520 220 Q650 175 735 210 L680 245 L575 255 Z'],
+  ['belly','M235 255 Q350 285 450 250 L500 285 Q365 325 250 290 Z']
+ ]},
+ {id:'stego',name:'ステゴサウルス',emoji:'🦕', regions:[
+  ['body','M165 250 Q245 165 390 180 Q500 195 590 245 L565 290 Q450 305 350 285 Q255 315 175 295 Z'],
+  ['head','M175 245 Q120 230 85 195 Q65 165 90 140 Q125 115 170 145 L205 190 Z'],
+  ['tail','M470 220 Q610 165 745 185 L700 225 Q610 245 520 260 Z'],
+  ['plates1','M205 185 L215 115 L240 175 L260 105 L280 175 L305 100 L325 180 L350 110 L365 185 L390 120 L405 195 Z'],
+  ['plates2','M405 195 L435 125 L450 200 L480 140 L495 215 L525 165 L540 225 L570 195 L575 245 Z'],
+  ['leg1','M245 270 L280 275 L270 425 L235 425 Z'],
+  ['leg2','M385 270 L420 275 L430 425 L395 425 Z'],
+  ['leg3','M485 270 L515 275 L525 405 L495 420 Z'],
+  ['foot','M230 420 L215 450 L245 450 L260 430 L275 450 L300 448 L275 420 Z'],
+  ['jaw','M92 180 Q135 185 165 168 L190 190 Q145 220 105 205 Z']
+ ]},
+ {id:'spino',name:'スピノサウルス',emoji:'🦖', regions:[
+  ['body','M155 245 Q255 175 405 195 Q535 210 650 250 L625 290 Q500 300 390 275 Q270 315 175 290 Z'],
+  ['head','M160 240 Q105 225 65 185 Q48 155 70 125 Q105 100 160 125 L210 175 L205 220 Z'],
+  ['snout','M72 145 L25 155 L70 180 L115 172 Z'],
+  ['sail','M225 205 L245 75 L285 180 L320 55 L350 190 L390 85 L420 205 Z'],
+  ['tail','M430 220 Q600 165 745 195 L690 230 Q570 250 470 265 Z'],
+  ['leg1','M300 275 L335 280 L325 425 L290 425 Z'],
+  ['leg2','M450 275 L485 278 L495 420 L460 420 Z'],
+  ['arm','M220 235 L250 250 L235 330 L205 320 Z'],
+  ['belly','M185 270 Q300 305 410 265 L470 295 Q320 330 190 300 Z'],
+  ['jaw','M70 170 Q125 185 175 160 L195 185 Q140 215 90 195 Z']
+ ]},
+ {id:'velociraptor',name:'ヴェロキラプトル',emoji:'🦖', regions:[
+  ['body','M210 245 Q290 190 385 205 Q470 220 560 260 L535 295 Q440 305 355 280 Q280 315 215 285 Z'],
+  ['head','M215 235 Q165 220 140 185 Q125 150 150 120 Q180 95 225 120 L260 165 L250 215 Z'],
+  ['snout','M155 145 L105 155 L150 175 L185 165 Z'],
+  ['tail','M390 220 Q560 180 735 215 L680 245 Q545 250 430 265 Z'],
+  ['leg1','M300 270 L330 275 L315 415 L280 415 Z'],
+  ['leg2','M420 270 L450 275 L465 415 L430 415 Z'],
+  ['sickle1','M300 395 L330 365 L325 425 L300 445 Z'],
+  ['sickle2','M435 395 L465 365 L475 425 L450 445 Z'],
+  ['arm','M220 235 L245 245 L225 305 L200 295 Z'],
+  ['feather','M175 205 Q210 175 260 185 L285 215 Q230 225 190 240 Z']
+ ]},
+ {id:'parasaurolophus',name:'パラサウロロフス',emoji:'🦕', regions:[
+  ['body','M180 245 Q280 180 420 200 Q530 220 640 260 L615 300 Q500 310 400 280 Q285 320 185 295 Z'],
+  ['head','M180 235 Q135 205 130 160 Q140 115 190 105 Q245 95 275 140 L250 205 Z'],
+  ['crest','M185 120 Q210 70 330 50 L275 145 L225 155 Z'],
+  ['tail','M430 225 Q600 175 745 210 L690 245 Q565 250 475 265 Z'],
+  ['leg1','M295 275 L330 280 L325 430 L290 430 Z'],
+  ['leg2','M450 275 L485 280 L500 430 L465 430 Z'],
+  ['arm','M220 235 L245 245 L235 315 L205 310 Z'],
+  ['belly','M185 275 Q310 310 420 270 L475 300 Q320 335 190 300 Z'],
+  ['jaw','M145 170 Q195 180 240 160 L250 185 Q195 210 150 195 Z']
+ ]},
+ {id:'ankylosaurus',name:'アンキロサウルス',emoji:'🦕', regions:[
+  ['body','M170 245 Q260 180 430 205 Q520 220 610 255 L590 305 Q470 325 350 295 Q240 325 170 295 Z'],
+  ['head','M175 250 Q125 240 95 205 Q75 175 100 145 Q135 120 180 140 L215 190 L205 230 Z'],
+  ['tail','M490 245 Q600 215 705 235 L735 255 L700 280 Q600 275 525 285 Z'],
+  ['club','M690 230 L750 215 L770 255 L745 295 L690 285 Z'],
+  ['armor1','M220 205 L245 160 L275 200 L300 155 L330 205 L360 165 L390 210 L420 175 L445 215 L475 190 L495 235 L455 255 L250 250 Z'],
+  ['leg1','M255 285 L290 290 L280 430 L245 430 Z'],
+  ['leg2','M405 290 L440 292 L445 430 L410 430 Z'],
+  ['leg3','M515 285 L545 285 L560 415 L525 425 Z'],
+  ['belly','M200 275 Q320 310 460 275 L510 305 Q350 340 205 305 Z'],
+  ['jaw','M100 195 Q145 210 190 190 L205 215 Q145 235 110 220 Z']
+ ]},
+ {id:'brachiosaurus',name:'ブラキオサウルス',emoji:'🦕', regions:[
+  ['body','M175 255 Q280 190 420 215 Q520 230 610 270 L590 310 Q475 320 360 295 Q255 325 175 300 Z'],
+  ['head','M455 170 Q500 145 540 170 Q560 190 545 215 L505 230 L470 205 Z'],
+  ['neck','M410 240 Q420 160 470 115 Q500 90 520 110 L505 150 L475 195 L475 260 Z'],
+  ['tail','M420 235 Q600 180 745 220 L690 255 Q560 260 470 275 Z'],
+  ['leg1','M250 285 L285 290 L275 455 L235 455 Z'],
+  ['leg2','M365 290 L400 292 L405 455 L365 455 Z'],
+  ['leg3','M500 290 L535 290 L555 445 L515 450 Z'],
+  ['frontleg','M555 285 L585 290 L610 430 L575 440 Z'],
+  ['foot','M225 448 L205 475 L240 475 L255 455 L275 475 L300 470 L275 448 Z'],
+  ['belly','M180 285 Q300 320 430 285 L480 315 Q330 350 190 315 Z']
+ ]},
+ {id:'pteranodon',name:'プテラノドン',emoji:'🪽', regions:[
+  ['body','M330 250 Q370 210 430 230 Q475 245 500 285 L470 310 Q400 300 345 285 Z'],
+  ['head','M335 240 Q305 210 315 175 Q330 145 365 155 L400 185 L390 225 Z'],
+  ['crest','M330 175 L300 100 L360 150 L390 115 L385 185 Z'],
+  ['wing1','M350 245 Q230 100 45 105 Q180 180 300 275 L360 285 Z'],
+  ['wing2','M450 250 Q585 115 755 135 Q630 210 500 285 Z'],
+  ['tail','M395 280 L330 350 L420 305 Z'],
+  ['leg1','M375 285 L395 290 L390 370 L365 370 Z'],
+  ['leg2','M440 285 L460 290 L470 365 L445 365 Z'],
+  ['beak','M315 175 L245 195 L315 205 Z'],
+  ['body2','M360 245 Q410 250 455 275 L440 305 L385 285 Z']
+ ]},
+ {id:'carnotaurus',name:'カルノタウルス',emoji:'🦖', regions:[
+  ['body','M175 245 Q275 175 420 200 Q535 220 635 260 L610 300 Q500 310 400 280 Q275 320 180 295 Z'],
+  ['head','M175 235 Q125 220 95 180 Q75 145 100 115 Q135 85 190 110 L230 160 L220 210 Z'],
+  ['horn1','M125 120 L105 65 L150 105 Z'],
+  ['horn2','M165 110 L165 55 L195 112 Z'],
+  ['tail','M430 220 Q600 175 745 205 L690 240 Q565 250 470 265 Z'],
+  ['leg1','M300 275 L335 280 L325 430 L290 430 Z'],
+  ['leg2','M450 275 L485 280 L495 430 L460 430 Z'],
+  ['arm','M225 235 L250 245 L235 305 L205 300 Z'],
+  ['belly','M185 270 Q300 305 420 270 L470 300 Q320 335 190 300 Z'],
+  ['jaw','M105 165 Q155 180 205 155 L220 180 Q155 210 115 195 Z']
+ ]}
+];
+
+let selectedColor=PALETTE[0], selectedDino=dinosaurs[0], undoStack=[];
+const canvasWrap=document.getElementById('canvasWrap');
+const colors=document.getElementById('colors');
+const dinos=document.getElementById('dinos');
+
+function renderDino(){
+ undoStack=[];
+ const d=selectedDino;
+ let regions=d.regions.map(([name,path],i)=>`<path class="region" data-name="${name}" data-i="${i}" d="${path}"></path>`).join('');
+ // shared scene details
+ canvasWrap.innerHTML=`<svg id="art" viewBox="0 0 800 500" aria-label="${d.name}のぬりえ">
+   <rect width="800" height="500" fill="#fbfdff" stroke="none"/>
+   <path d="M0 390 Q150 350 300 390 T600 390 T800 380 L800 500 L0 500Z" fill="#eef7e8" stroke="none"/>
+   <path d="M40 380 L120 285 L180 380 M110 380 L170 260 L230 380 M590 380 L660 270 L735 380" fill="none" stroke="#a9c7a0" stroke-width="5"/>
+   <g>${regions}</g>
+   <g class="details">
+    <path class="detail" d="M72 405 Q170 380 250 405 M520 410 Q620 385 750 410"/>
+    <circle class="eye" cx="${d.id==='brachiosaurus'?520:160}" cy="${d.id==='brachiosaurus'?175:145}" r="6"/>
+    <path class="detail" d="M${d.id==='triceratops'?'112 165 Q145 155 180 165':'125 150 Q155 160 190 150'}"/>
+   </g>
+ </svg>`;
+ document.querySelectorAll('.region').forEach(el=>el.addEventListener('pointerdown',e=>paint(e.currentTarget)));
+ updateProgress();
+ document.getElementById('message').textContent='いろをえらんで、恐竜のパーツをタップしてね！';
+}
+function paint(el){
+ const old=el.getAttribute('fill')||'#fff';
+ if(old===selectedColor)return;
+ undoStack.push({el,old});
+ el.setAttribute('fill',selectedColor);
+ document.getElementById('message').textContent='いいね！✨ すきないろでどんどんぬろう！';
+ updateProgress();
+}
+function updateProgress(){
+ const rs=[...document.querySelectorAll('.region')];
+ const painted=rs.filter(r=>{let f=r.getAttribute('fill');return f&&f!=='#fff'}).length;
+ const pct=rs.length?Math.round(painted/rs.length*100):0;
+ document.getElementById('progress').style.width=pct+'%';
+ document.getElementById('percent').textContent=pct+'% ぬれたよ';
+ if(pct===100) document.getElementById('message').innerHTML='<span class="done">🎉 ぜんぶぬれた！すごい！</span>';
+}
+function chooseColor(c,btn){
+ selectedColor=c;
+ document.querySelectorAll('.color').forEach(x=>x.classList.remove('selected'));
+ btn.classList.add('selected');
+ document.getElementById('message').textContent='このいろで、すきなところをタップしてね！';
+}
+function makeColors(){
+ PALETTE.forEach((c,i)=>{
+   const b=document.createElement('button'); b.className='color'+(i===0?' selected':'');
+   b.style.background=c; b.setAttribute('aria-label','色');
+   b.onclick=()=>chooseColor(c,b); colors.appendChild(b);
+ });
+}
+function makeDinos(){
+ dinosaurs.forEach((d,i)=>{
+   const b=document.createElement('button'); b.className='dino'+(i===0?' selected':'');
+   b.innerHTML=`<div class="thumb">${d.emoji}</div><b>${d.name}</b>`;
+   b.onclick=()=>{selectedDino=d;document.querySelectorAll('.dino').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');renderDino()};
+   dinos.appendChild(b);
+ });
+}
+document.getElementById('undo').onclick=()=>{
+ const last=undoStack.pop();
+ if(last){last.el.setAttribute('fill',last.old);updateProgress();document.getElementById('message').textContent='ひとつもどしたよ！'}
+};
+document.getElementById('reset').onclick=()=>renderDino();
+document.getElementById('clear').onclick=()=>{
+ document.querySelectorAll('.region').forEach(r=>r.setAttribute('fill','#fff'));undoStack=[];updateProgress();document.getElementById('message').textContent='しろにもどしたよ！もう一度ぬってみよう！'
+};
+document.getElementById('preview').onclick=()=>{
+ const art=document.getElementById('art').cloneNode(true);
+ art.removeAttribute('id'); art.classList.add('preview-svg');
+ document.getElementById('previewHolder').innerHTML='';document.getElementById('previewHolder').appendChild(art);
+ document.getElementById('modalText').textContent=`${selectedDino.name}をじょうずにぬれたね！`;
+ document.getElementById('modal').classList.add('show');
+};
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+makeColors();makeDinos();renderDino();
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+</script>
+</body></html>
