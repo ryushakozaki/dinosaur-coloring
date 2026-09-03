@@ -3,321 +3,131 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#7ac943">
-<meta name="description" content="4歳から遊べる、恐竜10種類の自由ぬりえゲーム。好きな色で好きなパーツをタップして塗れます。">
-<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#67b83f">
+<meta name="description" content="4歳から遊べる恐竜自由ぬりえ。好きな色で好きな場所をタップして塗れます。">
 <title>きょうりゅう自由ぬりえ</title>
 <style>
-:root{--green:#69b83f;--dark:#31552b;--cream:#fff9e8;--line:#3d3a32}
+:root{--green:#67b83f;--dark:#31552b;--cream:#fffaf0;--ink:#24231f}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:linear-gradient(#e9f8ff,#fff9e8 45%,#eaf7dd);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#39452f}
+html,body{margin:0;background:linear-gradient(#eaf8ff,#fffaf0 50%,#eaf7df);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#39452f}
 body{touch-action:manipulation}
 button{font:inherit;cursor:pointer}
-.app{max-width:1180px;margin:auto;padding:10px 12px 28px}
-header{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,#c8f0ff,#fff);padding:16px 18px 14px;box-shadow:0 4px 0 #b6d9a2}
-header:before,header:after{content:"";position:absolute;border-radius:50%;background:#fff;opacity:.8}
-header:before{width:150px;height:70px;right:-30px;top:-30px}
-header:after{width:100px;height:50px;left:28%;top:-20px}
-.title{position:relative;text-align:center;font-weight:1000;color:#f28b1c;font-size:clamp(30px,6vw,56px);text-shadow:0 3px 0 #fff;letter-spacing:.03em}
-.subtitle{position:relative;text-align:center;font-weight:800;font-size:clamp(14px,2.5vw,20px);color:#477b3a}
-.section{margin-top:12px;background:#ffffffdc;border:2px solid #d4e5c8;border-radius:22px;padding:12px;box-shadow:0 3px 10px #557a3a18}
-.section-title{font-weight:1000;color:#559c38;font-size:20px;margin:2px 4px 10px}
-.dinos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.dino{border:2px solid #d9e4d1;background:#fff;border-radius:16px;padding:7px 4px 6px;min-width:0;box-shadow:0 2px 0 #d6dfcc}
-.dino.selected{border-color:#69b83f;box-shadow:0 0 0 3px #bfeaa9,0 2px 0 #91bd78}
-.dino .thumb{height:58px;display:flex;align-items:center;justify-content:center;font-size:40px;filter:saturate(.8)}
-.dino b{display:block;text-align:center;font-size:clamp(10px,2vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px}
-.canvas-wrap{position:relative;background:#fff;border:3px solid #d6c49b;border-radius:20px;padding:8px;overflow:hidden}
-svg{display:block;width:100%;height:auto;background:#fff}
-.region{fill:#fff;stroke:var(--line);stroke-width:4;stroke-linejoin:round;stroke-linecap:round;cursor:pointer;transition:filter .1s}
-.region:active{filter:brightness(.9)}
-.detail{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.eye{fill:#222;stroke:none}
-.panel{display:flex;flex-direction:column;gap:10px}
-.panel-card{background:#fff;border:2px solid #d4e5c8;border-radius:20px;padding:12px}
-.panel-title{font-weight:1000;color:#559c38;margin-bottom:8px}
-.colors{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
-.color{width:100%;aspect-ratio:1;border:3px solid #fff;border-radius:12px;box-shadow:0 2px 0 #b5b5b5}
-.color.selected{outline:4px solid #365d2d;transform:scale(1.04)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.action{border:0;border-radius:15px;padding:11px 7px;background:#f1f7ec;color:#365b2d;font-weight:900;box-shadow:0 2px 0 #c7d8bd}
-.action.danger{background:#fff0f0;color:#a64b4b}
-.action.preview{background:#fff0c6;color:#7b5a20}
-.message{min-height:44px;text-align:center;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;color:#4b6f40}
-.progress{height:12px;background:#e5eedf;border-radius:99px;overflow:hidden}
-.progress>i{display:block;height:100%;width:0;background:#70c74c;border-radius:99px;transition:width .2s}
-.done{font-size:22px;text-align:center;color:#4f9c36;font-weight:1000}
-.legend{text-align:center;color:#74816c;font-size:13px;font-weight:700}
-footer{text-align:center;color:#74816c;font-size:12px;margin-top:12px}
-.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
-.modal.show{display:flex}
-.modal-card{background:#fffdf2;border-radius:26px;padding:24px;max-width:420px;width:100%;text-align:center;box-shadow:0 12px 40px #0005}
-.modal-card h2{color:#f28b1c;margin:0 0 10px;font-size:30px}
-.preview-svg{width:100%;border:2px solid #ddd;border-radius:16px}
-.modal-card button{border:0;background:#69b83f;color:#fff;font-weight:1000;border-radius:16px;padding:12px 22px;margin-top:12px}
-@media(max-width:800px){.main{grid-template-columns:1fr}.panel{display:grid;grid-template-columns:1fr 1fr}.panel-card.colors-card{grid-column:1/-1}.dinos{grid-template-columns:repeat(5,1fr)}}
-@media(max-width:520px){.app{padding:7px 7px 20px}.section{padding:8px;border-radius:18px}.dino{padding:4px 2px}.dino .thumb{height:46px;font-size:31px}.dinos{gap:5px}.main{gap:8px}.panel{display:flex}.panel-card{border-radius:17px;padding:9px}.colors{gap:5px}.color{border-radius:9px}}
+.app{max-width:1220px;margin:auto;padding:8px 10px 28px}
+header{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,#c9f1ff,#fff);padding:14px 16px;box-shadow:0 4px 0 #b8dca4}
+.title{text-align:center;font-size:clamp(28px,6vw,54px);font-weight:1000;color:#f28b1c;text-shadow:0 3px #fff}.subtitle{text-align:center;font-size:clamp(13px,2.4vw,19px);font-weight:900;color:#477b3a}
+.section{margin-top:11px;background:#ffffffec;border:2px solid #d6e7cb;border-radius:20px;padding:10px;box-shadow:0 3px 12px #557a3a18}.section-title{font-weight:1000;color:#559c38;font-size:19px;margin:2px 4px 9px}
+.dinos{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.dino{border:2px solid #dce7d4;background:#fff;border-radius:15px;padding:5px 3px;box-shadow:0 2px #d4dfcb;min-width:0}.dino.selected{border-color:#67b83f;box-shadow:0 0 0 3px #bfeaa9}.thumb{height:56px;display:flex;align-items:center;justify-content:center;font-size:39px}.dino b{display:block;text-align:center;font-size:clamp(10px,1.9vw,14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:11px}.canvas-wrap{background:#fff;border:3px solid #d6c49b;border-radius:19px;padding:5px;overflow:hidden;box-shadow:0 3px 10px #00000012}
+svg{display:block;width:100%;height:auto;background:#fff;border-radius:13px}.region{fill:#fff;stroke:var(--ink);stroke-width:2.7;stroke-linejoin:round;stroke-linecap:round;cursor:pointer;pointer-events:all;touch-action:none}.region:active{filter:brightness(.92)}.detail{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}.fine{fill:none;stroke:#4b4942;stroke-width:1.15;stroke-linecap:round;pointer-events:none}.eye{fill:#222;stroke:none;pointer-events:none}
+.panel{display:flex;flex-direction:column;gap:9px}.panel-card{background:#fff;border:2px solid #d6e7cb;border-radius:18px;padding:11px}.panel-title{font-weight:1000;color:#559c38;margin-bottom:8px}.colors{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.color{width:100%;aspect-ratio:1;border:3px solid #fff;border-radius:10px;box-shadow:0 2px #aaa;touch-action:manipulation}.color.selected{outline:4px solid #31552b;transform:scale(1.04)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.action{border:0;border-radius:14px;padding:10px 5px;background:#f1f7ec;color:#365b2d;font-weight:1000;box-shadow:0 2px #c7d8bd}.action.danger{background:#fff0f0;color:#a64b4b}.action.preview{background:#fff0c6;color:#7b5a20}.message{min-height:44px;text-align:center;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center}.progress{height:12px;background:#e5eedf;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;width:0;background:#70c74c;border-radius:99px;transition:width .2s}.legend{text-align:center;color:#74816c;font-size:12px;font-weight:800;margin-top:5px}.done{font-size:20px;color:#4f9c36;font-weight:1000}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.show{display:flex}.modal-card{background:#fffdf2;border-radius:25px;padding:22px;max-width:430px;width:100%;text-align:center}.modal-card h2{color:#f28b1c;margin:0 0 8px;font-size:29px}.modal-card button{border:0;background:#67b83f;color:#fff;font-weight:1000;border-radius:15px;padding:11px 20px;margin-top:10px}.preview-svg{width:100%;border:2px solid #ddd;border-radius:14px}
+@media(max-width:820px){.main{grid-template-columns:1fr}.panel{display:grid;grid-template-columns:1fr 1fr}.colors-card{grid-column:1/-1}}
+@media(max-width:520px){.app{padding:5px 6px 18px}.section{padding:7px;border-radius:17px}.dinos{gap:4px}.dino{padding:4px 2px}.thumb{height:43px;font-size:29px}.panel{display:flex}.panel-card{padding:9px}.colors{gap:5px}.color{border-radius:8px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-  <div class="title">🦖 きょうりゅう自由ぬりえ</div>
-  <div class="subtitle">すきないろをえらんで、すきなところをタップしてぬろう！</div>
-</header>
-
-<section class="section">
-  <div class="section-title">🦕 きょうりゅうをえらぼう</div>
-  <div class="dinos" id="dinos"></div>
-</section>
-
+<header><div class="title">🦖 きょうりゅう自由ぬりえ</div><div class="subtitle">すきないろをえらんで、すきなところをタップしてぬろう！</div></header>
+<section class="section"><div class="section-title">🦕 きょうりゅうをえらぼう</div><div class="dinos" id="dinos"></div></section>
 <section class="section main">
-  <div class="canvas-wrap" id="canvasWrap"></div>
-  <aside class="panel">
-    <div class="panel-card colors-card">
-      <div class="panel-title">🎨 いろをえらぼう</div>
-      <div class="colors" id="colors"></div>
-    </div>
-    <div class="panel-card">
-      <div class="panel-title">🧸 あそびかた</div>
-      <div class="message" id="message">いろをえらんで、恐竜のパーツをタップしてね！</div>
-      <div class="progress"><i id="progress"></i></div>
-      <div class="legend" id="percent">0% ぬれたよ</div>
-    </div>
-    <div class="panel-card">
-      <div class="actions">
-        <button class="action" id="undo">↩️ もどす</button>
-        <button class="action" id="reset">🔄 さいしょから</button>
-        <button class="action danger" id="clear">⬜ しろにもどす</button>
-        <button class="action preview" id="preview">👀 できあがり</button>
-      </div>
-    </div>
-  </aside>
-</section>
-
-<footer>4歳くらいから楽しめる、タップだけのかんたん恐竜ぬりえ。まちがえてもだいじょうぶ！</footer>
+<div class="canvas-wrap" id="canvasWrap"></div>
+<aside class="panel">
+<div class="panel-card colors-card"><div class="panel-title">🎨 いろをえらぼう</div><div class="colors" id="colors"></div></div>
+<div class="panel-card"><div class="panel-title">🧸 あそびかた</div><div class="message" id="message">いろをえらんで、恐竜のパーツをタップしてね！</div><div class="progress"><i id="progress"></i></div><div class="legend" id="percent">0% ぬれたよ</div></div>
+<div class="panel-card"><div class="actions"><button class="action" id="undo">↩️ もどす</button><button class="action" id="reset">🔄 さいしょから</button><button class="action danger" id="clear">⬜ しろにもどす</button><button class="action preview" id="preview">👀 できあがり</button></div></div>
+</aside></section>
+<footer style="text-align:center;color:#74816c;font-size:12px;margin-top:10px">4歳くらいから楽しめる、タップだけのかんたん恐竜ぬりえ。</footer>
 </div>
-
-<div class="modal" id="modal">
-  <div class="modal-card">
-    <h2>🎉 できあがり！</h2>
-    <div id="modalText">すごい！</div>
-    <div id="previewHolder"></div>
-    <button onclick="closeModal()">もっとぬる！</button>
-  </div>
-</div>
-
+<div class="modal" id="modal"><div class="modal-card"><h2>🎉 できあがり！</h2><div id="modalText">すごい！</div><div id="previewHolder"></div><button id="closeModal">もっとぬる！</button></div></div>
 <script>
-const PALETTE=[
- '#ff3b30','#ff6b35','#ff9f0a','#ffd60a','#8cc63f','#34c759','#00a86b',
- '#00b8d9','#0a84ff','#5856d6','#af52de','#ff2d92','#ff8fb1','#8b5e3c',
- '#c98b52','#f4c2a1','#ffd7b5','#fff1a8','#d7e6c8','#9b9b9b','#5b6470',
- '#3a3a3a','#ffffff'
+const PALETTE=['#ef3340','#ff6b35','#ff9f0a','#ffd60a','#8cc63f','#34c759','#00a86b','#00b8d9','#0a84ff','#5856d6','#af52de','#ff2d92','#ff8fb1','#8b5e3c','#c98b52','#f4c2a1','#fff1a8','#d7e6c8','#9b9b9b','#5b6470','#3a3a3a','#111111','#ffffff'];
+// 10種類。ぬりえ部分は「大きく重ならない領域」に分割し、iPhoneでも確実にタップできるSVGにしています。
+const D=[
+{id:'trex',name:'ティラノサウルス',emoji:'🦖',regions:[
+['head','M72 175 Q72 108 126 76 Q185 43 236 80 Q272 107 266 153 Q257 193 221 218 L177 238 L125 222 Q92 207 72 175Z'],
+['jaw','M88 174 Q137 184 193 161 Q224 151 248 166 Q229 215 177 238 Q123 230 88 201Z'],
+['neck','M210 150 Q267 141 318 178 L354 231 L317 273 L255 244 L207 208Z'],
+['body','M300 181 Q392 151 488 180 Q574 198 647 231 L612 286 Q521 301 430 274 Q354 303 270 272 L252 236Z'],
+['tail','M456 192 Q570 163 759 188 L700 231 Q596 242 505 251Z'],
+['hindleg1','M365 255 Q403 260 415 299 L397 423 L349 423 L335 328Z'],
+['hindleg2','M494 258 Q528 263 541 301 L555 420 L508 426 L478 319Z'],
+['forearm1','M251 214 Q277 226 275 257 L251 321 L222 310 L238 255Z'],
+['forearm2','M286 221 Q307 228 309 253 L292 302 L265 294 L273 250Z'],
+['foot1','M345 421 L323 450 L354 451 L374 432 L389 453 L418 449 L398 420Z'],
+['foot2','M505 423 L486 452 L516 451 L536 433 L551 453 L578 448 L553 420Z'] ],detail:[`<path class="detail" d="M105 130 Q135 104 170 103 M102 153 Q136 168 178 160 M121 194 Q155 202 184 190"/>`,`<path class="fine" d="M250 183 Q280 203 296 231 M286 175 Q310 198 328 226 M329 190 Q349 214 365 244 M369 183 Q389 207 405 244 M410 182 Q431 207 447 249 M452 184 Q476 207 492 250 M500 194 Q521 216 538 252"/>`]},
+{id:'triceratops',name:'トリケラトプス',emoji:'🦏',regions:[
+['frill','M93 166 Q75 112 108 73 Q150 38 208 61 Q251 80 269 126 L251 188 L190 173 L137 190Z'],
+['head','M105 168 Q115 128 153 118 Q203 112 238 147 L254 190 L224 232 L159 226 L116 205Z'],
+['horn1','M132 122 L91 40 L153 111Z'],['horn2','M181 113 L180 29 L211 118Z'],['nose','M113 176 L43 183 L105 210 L143 199Z'],
+['body','M238 196 Q320 163 424 183 Q521 197 604 238 L580 291 Q478 304 393 277 Q315 309 230 280 L214 236Z'],
+['tail','M472 207 Q610 166 758 198 L690 239 Q590 245 505 257Z'],
+['leg1','M275 267 L318 270 L306 430 L264 430Z'],['leg2','M390 268 L430 271 L433 433 L391 433Z'],['leg3','M505 263 L543 264 L562 419 L520 429Z'],['jaw','M124 199 Q168 216 218 194 L232 216 Q181 244 135 225Z'],['belly','M224 257 Q315 286 401 259 L457 288 Q337 320 236 292Z']],detail:[`<path class="detail" d="M143 148 Q173 132 207 145 M151 182 Q185 192 218 178 M170 211 Q191 217 211 207"/>`,`<path class="fine" d="M268 205 Q300 224 320 250 M315 195 Q344 216 365 250 M365 193 Q391 215 411 253 M414 198 Q439 220 460 255 M464 207 Q489 229 510 259 M517 218 Q541 238 557 264"/>`]},
+{id:'stego',name:'ステゴサウルス',emoji:'🦕',regions:[
+['head','M92 217 Q76 178 101 148 Q132 120 175 141 L213 181 L205 225 L165 244 L119 237Z'],
+['body','M171 218 Q254 166 365 177 Q469 184 561 231 L542 284 Q445 304 353 280 Q255 310 173 281Z'],
+['tail','M422 211 Q590 157 758 182 L701 225 Q573 241 473 254Z'],
+['plate1','M194 196 L206 112 L235 185 L252 91 L280 181 L301 86 L322 181 L346 92 L365 186 L389 104 L407 197Z'],
+['plate2','M400 198 L428 114 L445 202 L472 132 L490 215 L517 160 L530 225 L555 193 L565 245 L520 263Z'],
+['leg1','M239 267 L279 271 L270 423 L231 423Z'],['leg2','M358 266 L398 270 L405 426 L366 426Z'],['leg3','M464 263 L500 265 L519 409 L480 421Z'],['foot','M224 420 L206 449 L237 450 L256 430 L274 450 L301 445 L276 420Z'],['jaw','M99 211 Q135 220 170 202 L192 219 Q149 246 111 233Z']],detail:[`<path class="detail" d="M111 173 Q139 151 169 165 M113 198 Q143 209 174 196"/>`,`<path class="fine" d="M216 220 Q245 238 264 257 M264 202 Q292 222 311 258 M313 195 Q339 215 358 258 M362 194 Q388 214 408 260 M411 199 Q437 218 455 261 M460 208 Q484 228 500 265"/>`]},
+{id:'spino',name:'スピノサウルス',emoji:'🦖',regions:[
+['head','M76 195 Q60 157 82 127 Q114 101 162 119 L205 162 L198 210 L156 232 L110 222Z'],['snout','M84 152 L22 163 L77 184 L118 174Z'],
+['sail','M204 196 L226 74 L265 174 L300 51 L332 181 L369 81 L399 194 L426 116 L447 207Z'],['body','M162 222 Q256 173 378 190 Q496 199 602 242 L580 292 Q471 308 380 279 Q274 313 169 282Z'],['tail','M414 216 Q590 168 758 198 L693 238 Q566 246 464 258Z'],['leg1','M286 270 L324 274 L316 425 L280 425Z'],['leg2','M431 270 L469 274 L481 423 L445 423Z'],['arm','M202 217 L234 229 L220 303 L191 295Z'],['jaw','M84 180 Q132 196 180 170 L198 193 Q141 223 98 204Z'],['belly','M169 269 Q278 300 381 267 L441 298 Q298 327 176 298Z']],detail:[`<path class="detail" d="M98 147 Q130 128 158 142 M104 174 Q139 184 171 169"/>`,`<path class="fine" d="M221 211 Q248 229 268 258 M270 201 Q297 221 318 261 M320 198 Q346 218 368 264 M371 200 Q398 219 421 264 M425 207 Q451 228 472 266 M479 214 Q503 235 522 269"/>`]},
+{id:'raptor',name:'ヴェロキラプトル',emoji:'🦖',regions:[
+['head','M139 207 Q124 171 145 139 Q175 112 218 130 L253 166 L246 211 L205 235 L164 226Z'],['snout','M146 154 L96 165 L143 184 L179 173Z'],['body','M211 220 Q286 178 381 196 Q470 211 548 251 L529 294 Q438 307 354 280 Q277 313 213 283Z'],['tail','M391 215 Q564 177 758 210 L694 245 Q551 252 445 261Z'],['leg1','M283 273 L318 278 L305 415 L271 415Z'],['leg2','M402 274 L437 278 L452 414 L417 420Z'],['claw1','M272 408 L251 437 L279 435 L299 418 L316 438 L335 433 L312 408Z'],['claw2','M416 412 L397 441 L425 438 L446 422 L463 440 L483 433 L452 410Z'],['arm','M210 221 L239 232 L224 295 L198 286Z'],['feather','M164 211 Q203 177 255 193 L281 222 Q221 225 178 241Z'],['belly','M208 270 Q287 298 359 272 L405 297 Q291 326 214 298Z']],detail:[`<path class="detail" d="M160 164 Q183 145 207 157 M164 188 Q190 196 216 181"/>`,`<path class="fine" d="M244 215 Q272 232 288 258 M285 207 Q311 225 329 262 M330 205 Q355 225 374 264 M377 211 Q401 231 420 268 M425 220 Q450 239 466 273"/>`]},
+{id:'para',name:'パラサウロロフス',emoji:'🦕',regions:[
+['crest','M170 145 Q202 77 329 49 L273 153 L223 167Z'],['head','M143 208 Q130 166 149 132 Q178 105 225 119 L265 157 L251 207 L205 230 L164 224Z'],['body','M204 218 Q289 174 405 195 Q507 211 608 253 L583 302 Q483 310 395 282 Q289 318 205 289Z'],['tail','M431 220 Q599 175 758 208 L691 245 Q568 253 476 265Z'],['leg1','M292 278 L328 282 L323 428 L288 428Z'],['leg2','M446 279 L483 282 L496 429 L460 429Z'],['arm','M211 219 L242 232 L231 304 L201 298Z'],['jaw','M151 187 Q194 200 239 178 L250 201 Q198 228 156 213Z'],['belly','M203 277 Q300 307 402 276 L458 303 Q329 333 210 305Z']],detail:[`<path class="detail" d="M164 153 Q192 132 218 143 M163 180 Q193 191 222 176"/>`,`<path class="fine" d="M239 215 Q267 233 286 260 M286 207 Q315 227 333 264 M334 205 Q361 226 381 268 M385 211 Q411 231 431 272 M434 219 Q462 240 482 276 M489 231 Q515 249 533 280"/>`]},
+{id:'ankyl',name:'アンキロサウルス',emoji:'🦕',regions:[
+['head','M103 226 Q82 190 103 158 Q132 133 177 149 L215 190 L207 230 L166 249 L123 242Z'],['body','M166 218 Q259 170 397 192 Q506 208 594 251 L573 307 Q464 327 361 294 Q257 324 169 291Z'],['armor','M203 206 L224 160 L251 198 L277 151 L304 199 L332 159 L357 203 L388 170 L410 211 L442 184 L462 219 L493 197 L511 235 L469 260 L241 248Z'],['tail','M474 238 Q594 203 695 226 L737 248 L704 287 L621 274 L526 287Z'],['club','M692 224 L760 214 L782 257 L747 299 L697 287Z'],['leg1','M245 282 L281 288 L272 427 L238 427Z'],['leg2','M393 286 L429 289 L435 430 L400 430Z'],['leg3','M512 283 L547 284 L562 414 L528 424Z'],['jaw','M104 207 Q143 220 188 201 L203 223 Q151 249 112 232Z'],['belly','M170 278 Q282 309 388 278 L447 307 Q310 338 176 306Z']],detail:[`<path class="detail" d="M116 181 Q143 160 172 174 M119 207 Q148 218 177 204"/>`,`<path class="fine" d="M226 228 L252 215 M271 232 L295 217 M316 236 L341 222 M365 238 L389 225 M414 243 L438 230 M460 249 L482 238"/>`]},
+{id:'brachio',name:'ブラキオサウルス',emoji:'🦕',regions:[
+['head','M503 112 Q544 91 579 116 Q600 136 581 166 L548 184 L511 164Z'],['neck','M418 245 Q423 171 464 121 Q491 90 526 105 L511 150 L483 196 L480 267Z'],['body','M169 248 Q273 189 409 210 Q511 225 601 266 L580 314 Q469 323 362 297 Q258 329 168 299Z'],['tail','M417 235 Q589 183 758 219 L692 254 Q557 263 469 275Z'],['leg1','M248 290 L286 294 L276 455 L238 455Z'],['leg2','M365 291 L402 295 L407 455 L370 455Z'],['leg3','M490 294 L527 294 L548 447 L510 452Z'],['frontleg','M555 293 L591 297 L613 435 L577 444Z'],['foot','M227 449 L207 477 L241 477 L259 458 L279 478 L305 471 L278 449Z'],['belly','M171 287 Q285 320 405 286 L470 317 Q321 351 182 319Z']],detail:[`<path class="detail" d="M521 133 Q543 119 564 132 M526 151 Q550 159 570 145"/>`,`<path class="fine" d="M229 236 Q258 252 279 276 M274 225 Q302 244 323 278 M322 221 Q351 242 371 281 M372 221 Q402 242 423 282 M423 228 Q452 249 473 287 M476 237 Q504 258 522 291"/>`]},
+{id:'ptera',name:'プテラノドン',emoji:'🪽',regions:[
+['head','M321 199 Q302 171 319 144 Q340 125 370 139 L401 168 L391 205 L356 221Z'],['beak','M322 157 L246 177 L318 190Z'],['crest','M322 146 L294 77 L353 128 L389 92 L382 160Z'],['body','M333 218 Q377 187 432 209 Q476 225 503 263 L475 300 Q408 302 349 274Z'],['wing1','M354 225 Q244 102 48 103 Q184 175 302 276 L360 287Z'],['wing2','M440 221 Q575 103 758 134 Q632 205 506 280Z'],['tail','M394 274 L329 350 L421 303Z'],['leg1','M374 279 L396 283 L390 366 L365 366Z'],['leg2','M437 278 L459 282 L469 362 L445 362Z'],['body2','M356 225 Q404 226 453 263 L438 295 L383 275Z']],detail:[`<path class="detail" d="M333 159 Q350 148 369 159 M332 181 Q353 192 375 180"/>`,`<path class="fine" d="M92 120 Q191 151 289 240 M135 113 Q224 151 312 248 M186 118 Q257 158 329 252 M718 151 Q613 172 506 239 M686 171 Q596 190 511 253 M647 194 Q574 209 520 264"/>`]},
+{id:'carno',name:'カルノタウルス',emoji:'🦖',regions:[
+['head','M99 206 Q82 165 104 129 Q136 99 184 116 L224 159 L218 207 L177 231 L132 223Z'],['horn1','M126 119 L105 60 L151 106Z'],['horn2','M166 111 L166 52 L196 115Z'],['body','M176 219 Q272 171 402 194 Q515 211 612 253 L587 301 Q483 315 392 281 Q280 318 181 291Z'],['tail','M430 218 Q600 174 758 205 L691 241 Q568 249 471 262Z'],['leg1','M294 275 L331 280 L322 431 L286 431Z'],['leg2','M446 276 L483 280 L495 431 L459 431Z'],['arm','M220 219 L250 231 L235 300 L207 293Z'],['jaw','M107 180 Q153 194 201 170 L217 194 Q161 224 120 205Z'],['belly','M181 273 Q292 303 400 272 L461 301 Q321 334 188 302Z']],detail:[`<path class="detail" d="M118 155 Q144 134 172 146 M120 181 Q150 192 179 178"/>`,`<path class="fine" d="M227 217 Q255 235 274 262 M275 207 Q303 227 322 266 M323 204 Q351 224 372 269 M376 210 Q404 231 425 271 M430 220 Q457 239 479 276 M485 231 Q512 250 533 282"/>`]}
 ];
 
-const dinosaurs=[
- {id:'trex',name:'ティラノサウルス',emoji:'🦖', regions: [
-  ['body','M145 235 Q250 155 390 190 Q520 205 670 245 L650 285 Q535 285 430 265 Q320 305 210 300 Z'],
-  ['head','M150 235 Q105 215 70 165 Q55 115 95 80 Q150 45 215 78 L245 120 L215 190 Z'],
-  ['jaw','M90 160 Q145 175 215 145 Q235 160 218 195 Q170 225 105 200 Z'],
-  ['tail','M390 205 Q520 180 735 195 L690 225 Q550 235 425 250 Z'],
-  ['rearleg','M365 260 Q410 275 420 335 L400 445 L350 445 L335 365 Z'],
-  ['frontleg','M245 255 Q275 275 265 335 L240 385 L205 375 L225 315 Z'],
-  ['foot1','M350 438 L320 475 L350 478 L375 448 L395 475 L420 470 L400 440 Z'],
-  ['neck','M205 165 Q240 135 285 170 L315 230 L270 260 L225 220 Z'],
-  ['belly','M230 255 Q300 270 360 250 L390 290 Q315 320 230 295 Z'],
-  ['crest','M120 88 L150 48 L168 92 L190 45 L205 105 Z']
- ]},
- {id:'triceratops',name:'トリケラトプス',emoji:'🦏', regions:[
-  ['body','M230 210 Q320 160 455 190 Q540 205 625 245 L605 285 Q510 300 425 270 Q330 310 235 285 Z'],
-  ['head','M225 220 Q155 220 105 190 Q65 165 80 120 Q105 75 175 90 Q220 98 250 145 L275 195 Z'],
-  ['frill','M125 115 Q125 45 195 55 Q250 60 275 120 L250 165 L205 140 L165 165 Z'],
-  ['horn1','M130 108 L85 38 L145 95 Z'],
-  ['horn2','M175 100 L170 28 L205 105 Z'],
-  ['beak','M82 145 L38 160 L90 180 L125 168 Z'],
-  ['leg1','M300 270 L335 280 L325 435 L285 435 Z'],
-  ['leg2','M455 270 L490 275 L500 435 L460 435 Z'],
-  ['leg3','M540 270 L570 270 L595 415 L560 430 Z'],
-  ['tail','M520 220 Q650 175 735 210 L680 245 L575 255 Z'],
-  ['belly','M235 255 Q350 285 450 250 L500 285 Q365 325 250 290 Z']
- ]},
- {id:'stego',name:'ステゴサウルス',emoji:'🦕', regions:[
-  ['body','M165 250 Q245 165 390 180 Q500 195 590 245 L565 290 Q450 305 350 285 Q255 315 175 295 Z'],
-  ['head','M175 245 Q120 230 85 195 Q65 165 90 140 Q125 115 170 145 L205 190 Z'],
-  ['tail','M470 220 Q610 165 745 185 L700 225 Q610 245 520 260 Z'],
-  ['plates1','M205 185 L215 115 L240 175 L260 105 L280 175 L305 100 L325 180 L350 110 L365 185 L390 120 L405 195 Z'],
-  ['plates2','M405 195 L435 125 L450 200 L480 140 L495 215 L525 165 L540 225 L570 195 L575 245 Z'],
-  ['leg1','M245 270 L280 275 L270 425 L235 425 Z'],
-  ['leg2','M385 270 L420 275 L430 425 L395 425 Z'],
-  ['leg3','M485 270 L515 275 L525 405 L495 420 Z'],
-  ['foot','M230 420 L215 450 L245 450 L260 430 L275 450 L300 448 L275 420 Z'],
-  ['jaw','M92 180 Q135 185 165 168 L190 190 Q145 220 105 205 Z']
- ]},
- {id:'spino',name:'スピノサウルス',emoji:'🦖', regions:[
-  ['body','M155 245 Q255 175 405 195 Q535 210 650 250 L625 290 Q500 300 390 275 Q270 315 175 290 Z'],
-  ['head','M160 240 Q105 225 65 185 Q48 155 70 125 Q105 100 160 125 L210 175 L205 220 Z'],
-  ['snout','M72 145 L25 155 L70 180 L115 172 Z'],
-  ['sail','M225 205 L245 75 L285 180 L320 55 L350 190 L390 85 L420 205 Z'],
-  ['tail','M430 220 Q600 165 745 195 L690 230 Q570 250 470 265 Z'],
-  ['leg1','M300 275 L335 280 L325 425 L290 425 Z'],
-  ['leg2','M450 275 L485 278 L495 420 L460 420 Z'],
-  ['arm','M220 235 L250 250 L235 330 L205 320 Z'],
-  ['belly','M185 270 Q300 305 410 265 L470 295 Q320 330 190 300 Z'],
-  ['jaw','M70 170 Q125 185 175 160 L195 185 Q140 215 90 195 Z']
- ]},
- {id:'velociraptor',name:'ヴェロキラプトル',emoji:'🦖', regions:[
-  ['body','M210 245 Q290 190 385 205 Q470 220 560 260 L535 295 Q440 305 355 280 Q280 315 215 285 Z'],
-  ['head','M215 235 Q165 220 140 185 Q125 150 150 120 Q180 95 225 120 L260 165 L250 215 Z'],
-  ['snout','M155 145 L105 155 L150 175 L185 165 Z'],
-  ['tail','M390 220 Q560 180 735 215 L680 245 Q545 250 430 265 Z'],
-  ['leg1','M300 270 L330 275 L315 415 L280 415 Z'],
-  ['leg2','M420 270 L450 275 L465 415 L430 415 Z'],
-  ['sickle1','M300 395 L330 365 L325 425 L300 445 Z'],
-  ['sickle2','M435 395 L465 365 L475 425 L450 445 Z'],
-  ['arm','M220 235 L245 245 L225 305 L200 295 Z'],
-  ['feather','M175 205 Q210 175 260 185 L285 215 Q230 225 190 240 Z']
- ]},
- {id:'parasaurolophus',name:'パラサウロロフス',emoji:'🦕', regions:[
-  ['body','M180 245 Q280 180 420 200 Q530 220 640 260 L615 300 Q500 310 400 280 Q285 320 185 295 Z'],
-  ['head','M180 235 Q135 205 130 160 Q140 115 190 105 Q245 95 275 140 L250 205 Z'],
-  ['crest','M185 120 Q210 70 330 50 L275 145 L225 155 Z'],
-  ['tail','M430 225 Q600 175 745 210 L690 245 Q565 250 475 265 Z'],
-  ['leg1','M295 275 L330 280 L325 430 L290 430 Z'],
-  ['leg2','M450 275 L485 280 L500 430 L465 430 Z'],
-  ['arm','M220 235 L245 245 L235 315 L205 310 Z'],
-  ['belly','M185 275 Q310 310 420 270 L475 300 Q320 335 190 300 Z'],
-  ['jaw','M145 170 Q195 180 240 160 L250 185 Q195 210 150 195 Z']
- ]},
- {id:'ankylosaurus',name:'アンキロサウルス',emoji:'🦕', regions:[
-  ['body','M170 245 Q260 180 430 205 Q520 220 610 255 L590 305 Q470 325 350 295 Q240 325 170 295 Z'],
-  ['head','M175 250 Q125 240 95 205 Q75 175 100 145 Q135 120 180 140 L215 190 L205 230 Z'],
-  ['tail','M490 245 Q600 215 705 235 L735 255 L700 280 Q600 275 525 285 Z'],
-  ['club','M690 230 L750 215 L770 255 L745 295 L690 285 Z'],
-  ['armor1','M220 205 L245 160 L275 200 L300 155 L330 205 L360 165 L390 210 L420 175 L445 215 L475 190 L495 235 L455 255 L250 250 Z'],
-  ['leg1','M255 285 L290 290 L280 430 L245 430 Z'],
-  ['leg2','M405 290 L440 292 L445 430 L410 430 Z'],
-  ['leg3','M515 285 L545 285 L560 415 L525 425 Z'],
-  ['belly','M200 275 Q320 310 460 275 L510 305 Q350 340 205 305 Z'],
-  ['jaw','M100 195 Q145 210 190 190 L205 215 Q145 235 110 220 Z']
- ]},
- {id:'brachiosaurus',name:'ブラキオサウルス',emoji:'🦕', regions:[
-  ['body','M175 255 Q280 190 420 215 Q520 230 610 270 L590 310 Q475 320 360 295 Q255 325 175 300 Z'],
-  ['head','M455 170 Q500 145 540 170 Q560 190 545 215 L505 230 L470 205 Z'],
-  ['neck','M410 240 Q420 160 470 115 Q500 90 520 110 L505 150 L475 195 L475 260 Z'],
-  ['tail','M420 235 Q600 180 745 220 L690 255 Q560 260 470 275 Z'],
-  ['leg1','M250 285 L285 290 L275 455 L235 455 Z'],
-  ['leg2','M365 290 L400 292 L405 455 L365 455 Z'],
-  ['leg3','M500 290 L535 290 L555 445 L515 450 Z'],
-  ['frontleg','M555 285 L585 290 L610 430 L575 440 Z'],
-  ['foot','M225 448 L205 475 L240 475 L255 455 L275 475 L300 470 L275 448 Z'],
-  ['belly','M180 285 Q300 320 430 285 L480 315 Q330 350 190 315 Z']
- ]},
- {id:'pteranodon',name:'プテラノドン',emoji:'🪽', regions:[
-  ['body','M330 250 Q370 210 430 230 Q475 245 500 285 L470 310 Q400 300 345 285 Z'],
-  ['head','M335 240 Q305 210 315 175 Q330 145 365 155 L400 185 L390 225 Z'],
-  ['crest','M330 175 L300 100 L360 150 L390 115 L385 185 Z'],
-  ['wing1','M350 245 Q230 100 45 105 Q180 180 300 275 L360 285 Z'],
-  ['wing2','M450 250 Q585 115 755 135 Q630 210 500 285 Z'],
-  ['tail','M395 280 L330 350 L420 305 Z'],
-  ['leg1','M375 285 L395 290 L390 370 L365 370 Z'],
-  ['leg2','M440 285 L460 290 L470 365 L445 365 Z'],
-  ['beak','M315 175 L245 195 L315 205 Z'],
-  ['body2','M360 245 Q410 250 455 275 L440 305 L385 285 Z']
- ]},
- {id:'carnotaurus',name:'カルノタウルス',emoji:'🦖', regions:[
-  ['body','M175 245 Q275 175 420 200 Q535 220 635 260 L610 300 Q500 310 400 280 Q275 320 180 295 Z'],
-  ['head','M175 235 Q125 220 95 180 Q75 145 100 115 Q135 85 190 110 L230 160 L220 210 Z'],
-  ['horn1','M125 120 L105 65 L150 105 Z'],
-  ['horn2','M165 110 L165 55 L195 112 Z'],
-  ['tail','M430 220 Q600 175 745 205 L690 240 Q565 250 470 265 Z'],
-  ['leg1','M300 275 L335 280 L325 430 L290 430 Z'],
-  ['leg2','M450 275 L485 280 L495 430 L460 430 Z'],
-  ['arm','M225 235 L250 245 L235 305 L205 300 Z'],
-  ['belly','M185 270 Q300 305 420 270 L470 300 Q320 335 190 300 Z'],
-  ['jaw','M105 165 Q155 180 205 155 L220 180 Q155 210 115 195 Z']
- ]}
-];
-
-let selectedColor=PALETTE[0], selectedDino=dinosaurs[0], undoStack=[];
-const canvasWrap=document.getElementById('canvasWrap');
-const colors=document.getElementById('colors');
-const dinos=document.getElementById('dinos');
-
+let selectedColor=PALETTE[0],selectedDino=D[0],undoStack=[];
+const canvasWrap=document.getElementById('canvasWrap'),colors=document.getElementById('colors'),dinos=document.getElementById('dinos');
+function esc(s){return s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
 function renderDino(){
- undoStack=[];
- const d=selectedDino;
- let regions=d.regions.map(([name,path],i)=>`<path class="region" data-name="${name}" data-i="${i}" d="${path}"></path>`).join('');
- // shared scene details
- canvasWrap.innerHTML=`<svg id="art" viewBox="0 0 800 500" aria-label="${d.name}のぬりえ">
-   <rect width="800" height="500" fill="#fbfdff" stroke="none"/>
-   <path d="M0 390 Q150 350 300 390 T600 390 T800 380 L800 500 L0 500Z" fill="#eef7e8" stroke="none"/>
-   <path d="M40 380 L120 285 L180 380 M110 380 L170 260 L230 380 M590 380 L660 270 L735 380" fill="none" stroke="#a9c7a0" stroke-width="5"/>
-   <g>${regions}</g>
-   <g class="details">
-    <path class="detail" d="M72 405 Q170 380 250 405 M520 410 Q620 385 750 410"/>
-    <circle class="eye" cx="${d.id==='brachiosaurus'?520:160}" cy="${d.id==='brachiosaurus'?175:145}" r="6"/>
-    <path class="detail" d="M${d.id==='triceratops'?'112 165 Q145 155 180 165':'125 150 Q155 160 190 150'}"/>
-   </g>
+ undoStack=[];const d=selectedDino;
+ const regions=d.regions.map(([n,p],i)=>`<path class="region" data-name="${n}" data-i="${i}" d="${p}" fill="#fff" tabindex="0" role="button" aria-label="${n}"/>`).join('');
+ const details=(d.detail||[]).join('');
+ canvasWrap.innerHTML=`<svg id="art" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" aria-label="${esc(d.name)}のぬりえ">
+ <rect width="800" height="500" fill="#fbfdff"/>
+ <path d="M0 405 Q140 370 285 404 T565 399 T800 392 L800 500 L0 500Z" fill="#eef7e8"/>
+ <path d="M20 390 L120 280 L196 390 M85 390 L150 250 L230 390 M570 390 L655 270 L748 390" fill="none" stroke="#b8cfad" stroke-width="5"/>
+ <g id="regions">${regions}</g>
+ <g aria-hidden="true">${details}</g>
  </svg>`;
- document.querySelectorAll('.region').forEach(el=>el.addEventListener('pointerdown',e=>paint(e.currentTarget)));
- updateProgress();
- document.getElementById('message').textContent='いろをえらんで、恐竜のパーツをタップしてね！';
+ // click + pointerup の両方を使わず click に統一。iOS Safariで確実に発火する。
+ document.querySelectorAll('.region').forEach(el=>{
+   el.addEventListener('click',()=>paint(el));
+   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();paint(el)}});
+ });
+ updateProgress();document.getElementById('message').textContent='いろをえらんで、恐竜のパーツをタップしてね！';
 }
 function paint(el){
  const old=el.getAttribute('fill')||'#fff';
- if(old===selectedColor)return;
- undoStack.push({el,old});
- el.setAttribute('fill',selectedColor);
- document.getElementById('message').textContent='いいね！✨ すきないろでどんどんぬろう！';
- updateProgress();
+ if(old.toLowerCase()===selectedColor.toLowerCase())return;
+ undoStack.push({el,old});el.setAttribute('fill',selectedColor);
+ document.getElementById('message').textContent='いいね！✨ すきないろでどんどんぬろう！';updateProgress();
+ if(navigator.vibrate) navigator.vibrate(10);
 }
 function updateProgress(){
- const rs=[...document.querySelectorAll('.region')];
- const painted=rs.filter(r=>{let f=r.getAttribute('fill');return f&&f!=='#fff'}).length;
- const pct=rs.length?Math.round(painted/rs.length*100):0;
- document.getElementById('progress').style.width=pct+'%';
- document.getElementById('percent').textContent=pct+'% ぬれたよ';
- if(pct===100) document.getElementById('message').innerHTML='<span class="done">🎉 ぜんぶぬれた！すごい！</span>';
+ const rs=[...document.querySelectorAll('.region')],painted=rs.filter(r=>(r.getAttribute('fill')||'#fff').toLowerCase()!=='#fff').length;
+ const pct=rs.length?Math.round(painted/rs.length*100):0;document.getElementById('progress').style.width=pct+'%';document.getElementById('percent').textContent=pct+'% ぬれたよ';
+ if(pct===100)document.getElementById('message').innerHTML='<span class="done">🎉 ぜんぶぬれた！すごい！</span>';
 }
-function chooseColor(c,btn){
- selectedColor=c;
- document.querySelectorAll('.color').forEach(x=>x.classList.remove('selected'));
- btn.classList.add('selected');
- document.getElementById('message').textContent='このいろで、すきなところをタップしてね！';
-}
-function makeColors(){
- PALETTE.forEach((c,i)=>{
-   const b=document.createElement('button'); b.className='color'+(i===0?' selected':'');
-   b.style.background=c; b.setAttribute('aria-label','色');
-   b.onclick=()=>chooseColor(c,b); colors.appendChild(b);
- });
-}
-function makeDinos(){
- dinosaurs.forEach((d,i)=>{
-   const b=document.createElement('button'); b.className='dino'+(i===0?' selected':'');
-   b.innerHTML=`<div class="thumb">${d.emoji}</div><b>${d.name}</b>`;
-   b.onclick=()=>{selectedDino=d;document.querySelectorAll('.dino').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');renderDino()};
-   dinos.appendChild(b);
- });
-}
-document.getElementById('undo').onclick=()=>{
- const last=undoStack.pop();
- if(last){last.el.setAttribute('fill',last.old);updateProgress();document.getElementById('message').textContent='ひとつもどしたよ！'}
-};
-document.getElementById('reset').onclick=()=>renderDino();
-document.getElementById('clear').onclick=()=>{
- document.querySelectorAll('.region').forEach(r=>r.setAttribute('fill','#fff'));undoStack=[];updateProgress();document.getElementById('message').textContent='しろにもどしたよ！もう一度ぬってみよう！'
-};
-document.getElementById('preview').onclick=()=>{
- const art=document.getElementById('art').cloneNode(true);
- art.removeAttribute('id'); art.classList.add('preview-svg');
- document.getElementById('previewHolder').innerHTML='';document.getElementById('previewHolder').appendChild(art);
- document.getElementById('modalText').textContent=`${selectedDino.name}をじょうずにぬれたね！`;
- document.getElementById('modal').classList.add('show');
-};
-function closeModal(){document.getElementById('modal').classList.remove('show')}
+function chooseColor(c,b){selectedColor=c;document.querySelectorAll('.color').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');document.getElementById('message').textContent='このいろで、すきなところをタップしてね！'}
+function makeColors(){PALETTE.forEach((c,i)=>{const b=document.createElement('button');b.className='color'+(i===0?' selected':'');b.style.background=c;b.setAttribute('aria-label','色');b.addEventListener('click',()=>chooseColor(c,b));colors.appendChild(b)})}
+function makeDinos(){D.forEach((d,i)=>{const b=document.createElement('button');b.className='dino'+(i===0?' selected':'');b.innerHTML=`<div class="thumb">${d.emoji}</div><b>${d.name}</b>`;b.addEventListener('click',()=>{selectedDino=d;document.querySelectorAll('.dino').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');renderDino()});dinos.appendChild(b)})}
+document.getElementById('undo').addEventListener('click',()=>{const last=undoStack.pop();if(last){last.el.setAttribute('fill',last.old);updateProgress();document.getElementById('message').textContent='ひとつもどしたよ！'}});
+document.getElementById('reset').addEventListener('click',renderDino);
+document.getElementById('clear').addEventListener('click',()=>{document.querySelectorAll('.region').forEach(r=>r.setAttribute('fill','#fff'));undoStack=[];updateProgress();document.getElementById('message').textContent='しろにもどしたよ！もう一度ぬってみよう！'});
+document.getElementById('preview').addEventListener('click',()=>{const art=document.getElementById('art').cloneNode(true);art.removeAttribute('id');art.classList.add('preview-svg');document.getElementById('previewHolder').replaceChildren(art);document.getElementById('modalText').textContent=`${selectedDino.name}をじょうずにぬれたね！`;document.getElementById('modal').classList.add('show')});
+document.getElementById('closeModal').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
 makeColors();makeDinos();renderDino();
-if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
 </script>
 </body></html>
